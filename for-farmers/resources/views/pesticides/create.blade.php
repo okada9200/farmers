@@ -21,7 +21,7 @@
                 <input type="text" class="form-control" id="type" name="type" required>
             </div>
             <div class="form-group">
-                <label for="amount">量</label>
+                <label for="amount">量 (L):</label>
                 <input type="number" class="form-control" id="amount" name="amount" required>
             </div>
             <div class="form-group">
