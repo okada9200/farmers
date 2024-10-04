@@ -89,7 +89,7 @@
 <body>
     <!-- ナビゲーションバー -->
     <nav class="navbar navbar-expand-lg">
-        <a class="navbar-brand" href="{{ url('/') }}">for farmers</a>
+        <a class="navbar-brand" href="{{ url('/crops') }}">for farmers</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="ナビゲーションの切替">
             <span class="navbar-toggler-icon"></span>
         </button>
