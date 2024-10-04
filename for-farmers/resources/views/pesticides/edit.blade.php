@@ -15,7 +15,7 @@
             <input type="text" class="form-control" id="type" name="type" value="{{ old('type', $pesticide->type) }}">
         </div>
         <div class="form-group">
-            <label for="amount">量</label>
+            <label for="amount">量 (L) </label>
             <input type="number" class="form-control" id="amount" name="amount" value="{{ old('amount', $pesticide->amount) }}">
         </div>
         <div class="form-group">

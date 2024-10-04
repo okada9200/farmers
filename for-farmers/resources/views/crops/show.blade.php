@@ -6,6 +6,7 @@
 <a href="{{ route('works.create', $crop->id) }}" class="btn btn-primary mb-2">作業を追加</a>
 
 @if($crop->works->count())
+    <!-- 作業一覧テーブル -->
     <table class="table">
         <thead>
             <tr>
@@ -41,6 +42,7 @@
 <h2>肥料一覧</h2>
 <a href="{{ route('fertilizers.create', $crop->id) }}" class="btn btn-primary mb-2">肥料を追加</a>
 @if($crop->fertilizers->count())
+<!-- 肥料一覧テーブル -->
 <table class="table">
         <thead>
             <tr>
@@ -48,7 +50,7 @@
                 <th>種類</th>
                 <th>量</th>
                 <th>メモ</th>
-                <th>操作</th> <!-- 操作列を追加 -->
+                <th>操作</th> 
             </tr>
         </thead>
         <tbody>
@@ -56,7 +58,7 @@
                 <tr>
                     <td>{{ $fertilizer->application_date }}</td>
                     <td>{{ $fertilizer->type }}</td>
-                    <td>{{ $fertilizer->amount }}</td>
+                    <td>{{ $fertilizer->amount }} kg </td>
                     <td>{{ $fertilizer->note }}</td>
                     <td>
                         <a href="{{ route('fertilizers.edit', [$crop->id, $fertilizer->id]) }}" class="btn btn-primary">編集</a>
@@ -91,7 +93,7 @@
                 <tr>
                     <td>{{ $pesticide->application_date }}</td>
                     <td>{{ $pesticide->type }}</td>
-                    <td>{{ $pesticide->amount }}</td>
+                    <td>{{ $pesticide->amount }} L </td>
                     <td>{{ $pesticide->note }}</td>
                     <td>
                         <a href="{{ route('pesticides.edit', [$crop->id, $pesticide->id]) }}" class="btn btn-primary">編集</a>
