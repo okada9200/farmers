@@ -2,16 +2,17 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ルート検索（TSP対応）</title>
+    <!-- 必要なスタイルシート -->
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <!-- Leaflet Control Geocoder CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pVQ0K5BvcQbK2L2QH3C2Hvq0H4oHn5Z9i3u5lxSCjQG0C6VFIJmV0xgBT6k9x+n9cg6y0pTjVJ5lIhhs/9Jr/Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
     <style>
         /* Global Styles */
         body, html {
@@ -157,14 +158,14 @@
             margin-top: 10px;
         }
 
-        #loading img {
-            width: 50px;
-            margin-bottom: 10px;
-        }
-
         /* Map Styling */
         #map {
             flex: 1;
+        }
+
+        /* Route Order Display */
+        #route-order {
+            margin-top: 20px;
         }
 
         /* Responsive Design */
@@ -217,8 +218,8 @@
         <div id="sidebar">
             <h1>ルート検索（TSP対応）</h1>
             <label for="start"><i class="fas fa-map-marker-alt" style="color:#007bff;"></i> 出発地</label>
-            <input type="text" id="start" placeholder="出発地を入力">
-    
+            <input type="text" id="start" placeholder="出発地（例：東京都千代田区1-1-1）を入力">
+
             <div id="destinations">
                 <div class="destination-group">
                     <label>目的地1</label>
@@ -229,47 +230,38 @@
             <button id="add-destination" class="btn"><i class="fas fa-plus"></i> 目的地を追加</button>
             <button id="search-route" class="btn"><i class="fas fa-route"></i> ルート検索</button>
             <div id="loading">
-                <img src="https://i.imgur.com/LLF5iyg.gif" alt="Loading...">
                 <p>ルートを検索中...</p>
+            </div>
+
+            <!-- Route Order Display -->
+            <div id="route-order">
+                <h3>目的地巡回ルートの順番</h3>
+                <ul id="order-list"></ul>
             </div>
         </div>
         <div id="map"></div>
     </div>
 
+    <!-- 必要なスクリプト -->
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <!-- Leaflet Control Geocoder JS -->
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" integrity="sha512-lrY1W7KjYMGsK1m5cdlBQ46CnK6CU2YQ1LVh+aOJKxT6sV0rGzRG49q6+0edTzMoTQJwG+PQfhuEhkX5G3tkkg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- Font Awesome JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
-        // Initialize the map
+        // マップの初期化
         var map = L.map('map').setView([35.6895, 139.6917], 13); // 東京の緯度経度
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
-        // Initialize the geocoder control
-        L.Control.geocoder({
-            defaultMarkGeocode: false
-        })
-        .on('markgeocode', function(e) {
-            var bbox = e.geocode.bbox;
-            var poly = L.polygon([
-                bbox.getSouthEast(),
-                bbox.getNorthEast(),
-                bbox.getNorthWest(),
-                bbox.getSouthWest()
-            ]).addTo(map);
-            map.fitBounds(poly.getBounds());
-            poly.bindPopup(e.geocode.name).openPopup();
-        })
-        .addTo(map);
-
+        // その他の変数
         var routeLayer;
         var markers = [];
 
-        // Function to add a new destination input group
+        // 目的地を追加する関数やイベントリスナーの設定
         function addDestination() {
             var destinations = document.getElementById('destinations');
             var destinationCount = destinations.getElementsByClassName('destination').length + 1;
@@ -282,17 +274,14 @@
             `;
             destinations.appendChild(newDestination);
 
-            // Add event listener for remove button
+            // 削除ボタンのイベントリスナーを追加
             newDestination.querySelector('.remove-destination').addEventListener('click', function() {
                 destinations.removeChild(newDestination);
                 updateDestinationLabels();
             });
-
-            // Smoothly scroll to the new destination
-            newDestination.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Function to update destination labels after removal
+        // 目的地のラベルを更新する関数
         function updateDestinationLabels() {
             var destinationGroups = document.getElementsByClassName('destination-group');
             for (var i = 0; i < destinationGroups.length; i++) {
@@ -301,10 +290,10 @@
             }
         }
 
-        // Add event listener for "Add Destination" button
+        // ボタンのイベントリスナーを追加
         document.getElementById('add-destination').addEventListener('click', addDestination);
 
-        // Add event listener for initial remove button
+        // 初期の削除ボタンのイベントリスナーを追加
         document.querySelectorAll('.remove-destination').forEach(function(button) {
             button.addEventListener('click', function() {
                 var destinationGroup = this.parentElement;
@@ -313,7 +302,7 @@
             });
         });
 
-        // Add event listener for "Search Route" button
+        // ルート検索ボタンのイベントリスナーを追加
         document.getElementById('search-route').addEventListener('click', function() {
             var start = document.getElementById('start').value.trim();
             var destinationInputs = document.getElementsByClassName('destination');
@@ -324,7 +313,7 @@
                 }
             }
 
-            // Input validation
+            // 入力のバリデーション
             if (start === "") {
                 alert('出発地を入力してください。');
                 return;
@@ -338,15 +327,16 @@
             searchRoute(start, destinations);
         });
 
-        // Function to search and display the route
+        // ルート検索と表示の関数
         function searchRoute(start, destinations) {
             showLoading(true);
             clearMap();
 
             var geocodeUrl = 'https://nominatim.openstreetmap.org/search?format=json&limit=1&q=';
             var waypoints = [];
+            var inputDestinations = []; // 入力された目的地のリスト
 
-            // Geocode the start location
+            // 出発地のジオコーディング
             fetch(geocodeUrl + encodeURIComponent(start))
                 .then(response => response.json())
                 .then(startData => {
@@ -354,10 +344,13 @@
                         var startLat = parseFloat(startData[0].lat);
                         var startLon = parseFloat(startData[0].lon);
                         waypoints.push({ lat: startLat, lon: startLon });
-                        addMarker(startLat, startLon, '出発地');
+                        // マーカーは後で追加します
 
-                        // Geocode all destination locations
-                        return Promise.all(destinations.map(destination => fetch(geocodeUrl + encodeURIComponent(destination))));
+                        // 目的地のジオコーディング
+                        return Promise.all(destinations.map(destination => {
+                            inputDestinations.push(destination); // 入力順に目的地を保存
+                            return fetch(geocodeUrl + encodeURIComponent(destination));
+                        }));
                     } else {
                         throw new Error('出発地が見つかりません。');
                     }
@@ -369,7 +362,9 @@
                             var lat = parseFloat(data[0].lat);
                             var lon = parseFloat(data[0].lon);
                             waypoints.push({ lat: lat, lon: lon });
-                            addMarker(lat, lon, '目的地' + (index + 1));
+                            // マーカーは後で追加します
+                        } else {
+                            console.warn(`目的地${index + 1}が見つかりません。`);
                         }
                     });
 
@@ -377,14 +372,16 @@
                         throw new Error('有効な目的地が見つかりません。');
                     }
 
-                    // Construct the OSRM Trip API URL for TSP
+                    // OSRM Trip APIのURLを構築（roundtrip=trueに設定）
                     var coordinates = waypoints.map(wp => wp.lon + ',' + wp.lat).join(';');
-                    var osrmTripUrl = 'https://router.project-osrm.org/trip/v1/driving/' + coordinates + '?source=first&roundtrip=false&geometries=geojson&overview=full';
+                    var osrmTripUrl = 'http://localhost:5050/trip/v1/driving/' + coordinates + '?source=first&roundtrip=true&geometries=geojson&overview=full';
 
                     return fetch(osrmTripUrl);
                 })
                 .then(response => response.json())
                 .then(tripData => {
+                    console.log('OSRM API Response:', tripData);
+
                     if (tripData.code === 'Ok' && tripData.trips && tripData.trips.length > 0) {
                         var trip = tripData.trips[0];
 
@@ -398,8 +395,18 @@
 
                         map.fitBounds(routeLayer.getBounds());
 
-                        // Add route markers with sequence
-                        trip.waypoints.forEach((wp, index) => {
+                        // ウェイポイントが存在するか確認
+                        if (!tripData.waypoints || tripData.waypoints.length === 0) {
+                            throw new Error('目的地の情報が見つかりません。');
+                        }
+
+                        // ウェイポイントを最適な順序で並べ替え
+                        var orderedWaypoints = tripData.waypoints.slice().sort((a, b) => {
+                            return a.waypoint_index - b.waypoint_index;
+                        });
+
+                        // マーカーを追加
+                        orderedWaypoints.forEach((wp, index) => {
                             var marker = L.marker([wp.location[1], wp.location[0]], {
                                 icon: L.divIcon({
                                     className: 'route-marker',
@@ -412,8 +419,11 @@
                             markers.push(marker);
                         });
 
+                        // 目的地の順序を表示
+                        displayRouteOrder(orderedWaypoints, inputDestinations);
+
                     } else {
-                        throw new Error('ルートが見つかりません。');
+                        throw new Error('ルートが見つかりません。' + JSON.stringify(tripData));
                     }
                 })
                 .catch(error => {
@@ -424,14 +434,36 @@
                 });
         }
 
-        // Function to add a marker to the map
+        // 目的地の順序を表示する関数
+        function displayRouteOrder(orderedWaypoints, inputDestinations) {
+            var orderList = document.getElementById('order-list');
+            orderList.innerHTML = ''; // 既存のリストをクリア
+
+            orderedWaypoints.forEach((wp, index) => {
+                var li = document.createElement('li');
+                var pointInfo = `地点${index + 1}: `;
+
+                if (index === 0 || index === orderedWaypoints.length - 1) {
+                    pointInfo += '出発地';
+                } else {
+                    // 入力された目的地に対応する名前を表示
+                    var destIndex = wp.waypoint_index - 1; // 出発地を除くため-1
+                    pointInfo += inputDestinations[destIndex];
+                }
+
+                li.textContent = pointInfo;
+                orderList.appendChild(li);
+            });
+        }
+
+        // マーカーを追加する関数
         function addMarker(lat, lon, popupText) {
             var marker = L.marker([lat, lon]).addTo(map);
             marker.bindPopup(popupText);
             markers.push(marker);
         }
 
-        // Function to clear existing map layers and markers
+        // マップ上のレイヤーとマーカーをクリアする関数
         function clearMap() {
             if (routeLayer) {
                 map.removeLayer(routeLayer);
@@ -442,7 +474,7 @@
             markers = [];
         }
 
-        // Function to show or hide the loading indicator
+        // ローディング表示の切り替え
         function showLoading(show) {
             var loading = document.getElementById('loading');
             if (show) {
@@ -451,6 +483,54 @@
                 loading.style.display = 'none';
             }
         }
+
+        // 地図クリック時のイベントリスナー
+        map.on('click', function(e) {
+            var lat = e.latlng.lat;
+            var lon = e.latlng.lng;
+
+            // 逆ジオコーディングを行う
+            var reverseGeocodeUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&addressdetails=1`;
+
+            fetch(reverseGeocodeUrl)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.display_name) {
+                        var address = data.display_name;
+
+                        // 出発地が空の場合は出発地として設定
+                        var startInput = document.getElementById('start');
+                        if (startInput.value.trim() === "") {
+                            startInput.value = address; // 住所を表示
+                            addMarker(lat, lon, '出発地'); // マーカーを追加
+                        } else {
+                            // 目的地として追加
+                            var destinationInputs = document.getElementsByClassName('destination');
+                            var added = false;
+                            for (var i = 0; i < destinationInputs.length; i++) {
+                                if (destinationInputs[i].value.trim() === "") {
+                                    destinationInputs[i].value = address; // 住所を表示
+                                    addMarker(lat, lon, '目的地'); // マーカーを追加
+                                    added = true;
+                                    break;
+                                }
+                            }
+                            if (!added) {
+                                addDestination();
+                                var newInput = document.getElementsByClassName('destination');
+                                newInput[newInput.length - 1].value = address;
+                                addMarker(lat, lon, '目的地');
+                            }
+                        }
+                    } else {
+                        alert('位置の住所が見つかりません。');
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert('エラーが発生しました。');
+                });
+        });
     </script>
 </body>
 </html>
