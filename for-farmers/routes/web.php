@@ -32,14 +32,18 @@ Route::delete('crops/{crop}/pesticides/{pesticide}', [PesticideController::class
 
 
 //巡回ルート計算関連
-Route::get('tsp', [TSPController::class, 'index'])->name('tsp.index');
-Route::post('tsp/calculate', [TSPController::class, 'calculate'])->name('tsp.calculate');
 
-Route::get('/calculate-route', [RouteController::class, 'calculateRoute']);
-Route::get('/map', function () {
-    return view('map');
-});
+//Route::get('/calculate-route', [RouteController::class, 'calculateRoute']);
+//Route::get('/map', function () {
+//    return view('map');
+//});
 
+// ルート検索機能
+// ルート検索ページの表示
+Route::get('/routes', [RouteController::class, 'index'])->name('routes.search');
 
-Route::get('route/input', [RouteController::class, 'input'])->name('route.input');
-Route::post('route/showOptimal', [RouteController::class, 'showOptimalRoute'])->name('route.showOptimal');
+// ルートの保存
+Route::post('/routes/save', [RouteController::class, 'save'])->name('routes.save');
+
+// データのクリア
+Route::post('/routes/clear', [RouteController::class, 'clear'])->name('routes.clear');

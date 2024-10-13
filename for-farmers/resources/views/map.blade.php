@@ -1,8 +1,39 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <title>ルート検索（TSP対応）</title>
+@extends('layouts.app')
+
+@section('content')
+    <div id="container">
+        <div id="sidebar">
+            <h1>ルート検索（TSP対応）</h1>
+            <label for="start"><i class="fas fa-map-marker-alt" style="color:#007bff;"></i> 出発地</label>
+            <input type="text" id="start" placeholder="出発地（例：東京都千代田区1-1-1）を入力" value="{{ $start }}">
+
+            <div id="destinations">
+                @foreach ($destinations as $index => $destination)
+                    <div class="destination-group">
+                        <label>目的地{{ $index + 1 }}</label>
+                        <input type="text" class="destination" placeholder="目的地を入力" value="{{ $destination }}">
+                        <button class="remove-destination" title="削除"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                @endforeach
+            </div>
+            <button id="add-destination" class="btn"><i class="fas fa-plus"></i> 目的地を追加</button>
+            <button id="search-route" class="btn"><i class="fas fa-route"></i> ルート検索</button>
+            <button id="clear-data" class="btn" style="background-color: #dc3545; color: white;"><i class="fas fa-trash"></i> データをクリア</button>
+            <div id="loading">
+                <p>ルートを検索中...</p>
+            </div>
+
+            <!-- Route Order Display -->
+            <div id="route-order">
+                <h3>目的地巡回ルートの順番</h3>
+                <ul id="order-list"></ul>
+            </div>
+        </div>
+        <div id="map"></div>
+    </div>
+@endsection
+
+@section('styles')
     <!-- 必要なスタイルシート -->
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
@@ -14,7 +45,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
     <style>
-        /* Global Styles */
+        /* 既存のスタイル */
         body, html {
             height: 100%;
             margin: 0;
@@ -22,13 +53,11 @@
             background-color: #f0f2f5;
         }
 
-        /* Container Layout */
         #container {
             display: flex;
-            height: 100%;
+            height: 80vh;
         }
 
-        /* Sidebar Styling */
         #sidebar {
             width: 350px;
             padding: 30px 20px;
@@ -45,7 +74,6 @@
             color: #333333;
         }
 
-        /* Form Elements */
         label {
             display: block;
             font-weight: 500;
@@ -68,7 +96,6 @@
             outline: none;
         }
 
-        /* Destination Group */
         .destination-group {
             display: flex;
             align-items: center;
@@ -115,7 +142,6 @@
             background: #c82333;
         }
 
-        /* Add and Search Buttons */
         .btn {
             width: 100%;
             padding: 12px;
@@ -151,24 +177,20 @@
             transform: translateY(-2px);
         }
 
-        /* Loading Indicator */
         #loading {
             display: none;
             text-align: center;
             margin-top: 10px;
         }
 
-        /* Map Styling */
         #map {
             flex: 1;
         }
 
-        /* Route Order Display */
         #route-order {
             margin-top: 20px;
         }
 
-        /* Responsive Design */
         @media (max-width: 768px) {
             #container {
                 flex-direction: column;
@@ -194,17 +216,14 @@
             }
         }
 
-        /* Additional Enhancements */
         .btn i {
             margin-right: 8px;
         }
 
-        /* Smooth Transitions for Adding/Removing */
         .destination-group {
             transition: all 0.3s ease;
         }
 
-        /* Geocoder Search Box Styling */
         .leaflet-control-geocoder {
             background: white;
             box-shadow: 0 1px 5px rgba(0,0,0,0.4);
@@ -212,36 +231,9 @@
             padding: 5px;
         }
     </style>
-</head>
-<body>
-    <div id="container">
-        <div id="sidebar">
-            <h1>ルート検索（TSP対応）</h1>
-            <label for="start"><i class="fas fa-map-marker-alt" style="color:#007bff;"></i> 出発地</label>
-            <input type="text" id="start" placeholder="出発地（例：東京都千代田区1-1-1）を入力">
+@endsection
 
-            <div id="destinations">
-                <div class="destination-group">
-                    <label>目的地1</label>
-                    <input type="text" class="destination" placeholder="目的地を入力">
-                    <button class="remove-destination" title="削除"><i class="fas fa-trash-alt"></i></button>
-                </div>
-            </div>
-            <button id="add-destination" class="btn"><i class="fas fa-plus"></i> 目的地を追加</button>
-            <button id="search-route" class="btn"><i class="fas fa-route"></i> ルート検索</button>
-            <div id="loading">
-                <p>ルートを検索中...</p>
-            </div>
-
-            <!-- Route Order Display -->
-            <div id="route-order">
-                <h3>目的地巡回ルートの順番</h3>
-                <ul id="order-list"></ul>
-            </div>
-        </div>
-        <div id="map"></div>
-    </div>
-
+@section('scripts')
     <!-- 必要なスクリプト -->
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
@@ -249,9 +241,10 @@
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
     <!-- Font Awesome JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
     <script>
         // マップの初期化
-        var map = L.map('map').setView([35.6895, 139.6917], 13); // 東京の緯度経度
+        var map = L.map('map').setView([34.6581, 135.7967], 13); // 奈良県大和郡山市矢田町の緯度経度
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '&copy; OpenStreetMap contributors'
@@ -261,15 +254,15 @@
         var routeLayer;
         var markers = [];
 
-        // 目的地を追加する関数やイベントリスナーの設定
-        function addDestination() {
+        // 目的地を追加する関数
+        function addDestination(value = '') {
             var destinations = document.getElementById('destinations');
-            var destinationCount = destinations.getElementsByClassName('destination').length + 1;
+            var destinationCount = destinations.getElementsByClassName('destination-group').length + 1;
             var newDestination = document.createElement('div');
             newDestination.className = 'destination-group';
             newDestination.innerHTML = `
                 <label>目的地${destinationCount}</label>
-                <input type="text" class="destination" placeholder="目的地を入力">
+                <input type="text" class="destination" placeholder="目的地を入力" value="${value}">
                 <button class="remove-destination" title="削除"><i class="fas fa-trash-alt"></i></button>
             `;
             destinations.appendChild(newDestination);
@@ -278,7 +271,11 @@
             newDestination.querySelector('.remove-destination').addEventListener('click', function() {
                 destinations.removeChild(newDestination);
                 updateDestinationLabels();
+                saveData();
             });
+
+            // 入力フィールドのイベントリスナーを追加
+            newDestination.querySelector('.destination').addEventListener('input', saveData);
         }
 
         // 目的地のラベルを更新する関数
@@ -290,17 +287,29 @@
             }
         }
 
-        // ボタンのイベントリスナーを追加
-        document.getElementById('add-destination').addEventListener('click', addDestination);
+        // 既存の目的地入力フィールドにイベントリスナーを追加
+        document.querySelectorAll('.destination').forEach(function(input) {
+            input.addEventListener('input', saveData);
+        });
 
-        // 初期の削除ボタンのイベントリスナーを追加
+        // 既存の削除ボタンのイベントリスナーを追加
         document.querySelectorAll('.remove-destination').forEach(function(button) {
             button.addEventListener('click', function() {
                 var destinationGroup = this.parentElement;
                 destinationGroup.parentElement.removeChild(destinationGroup);
                 updateDestinationLabels();
+                saveData();
             });
         });
+
+        // ボタンのイベントリスナーを追加
+        document.getElementById('add-destination').addEventListener('click', function() {
+            addDestination();
+            saveData();
+        });
+
+        // 出発地の入力フィールドにイベントリスナーを追加
+        document.getElementById('start').addEventListener('input', saveData);
 
         // ルート検索ボタンのイベントリスナーを追加
         document.getElementById('search-route').addEventListener('click', function() {
@@ -325,6 +334,27 @@
             }
 
             searchRoute(start, destinations);
+        });
+
+        // データをクリアするボタンのイベントリスナーを追加
+        document.getElementById('clear-data').addEventListener('click', function() {
+            // Ajaxでデータをサーバーから削除
+            fetch("{{ route('routes.clear') }}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('start').value = '';
+                document.getElementById('destinations').innerHTML = '';
+                addDestination(); // 最初の目的地入力フィールドを追加
+                alert(data.message);
+            })
+            .catch(error => {
+                console.error('データのクリアに失敗しました。', error);
+            });
         });
 
         // ルート検索と表示の関数
@@ -456,13 +486,6 @@
             });
         }
 
-        // マーカーを追加する関数
-        function addMarker(lat, lon, popupText) {
-            var marker = L.marker([lat, lon]).addTo(map);
-            marker.bindPopup(popupText);
-            markers.push(marker);
-        }
-
         // マップ上のレイヤーとマーカーをクリアする関数
         function clearMap() {
             if (routeLayer) {
@@ -516,12 +539,14 @@
                                 }
                             }
                             if (!added) {
-                                addDestination();
-                                var newInput = document.getElementsByClassName('destination');
-                                newInput[newInput.length - 1].value = address;
+                                addDestination(address);
                                 addMarker(lat, lon, '目的地');
                             }
                         }
+
+                        // データを保存
+                        saveData();
+
                     } else {
                         alert('位置の住所が見つかりません。');
                     }
@@ -531,6 +556,42 @@
                     alert('エラーが発生しました。');
                 });
         });
+
+        // マーカーを追加する関数
+        function addMarker(lat, lon, popupText) {
+            var marker = L.marker([lat, lon]).addTo(map);
+            marker.bindPopup(popupText);
+            markers.push(marker);
+        }
+
+        // データを保存する関数
+        function saveData() {
+            var start = document.getElementById('start').value.trim();
+            var destinationInputs = document.getElementsByClassName('destination');
+            var destinations = [];
+            for (var i = 0; i < destinationInputs.length; i++) {
+                destinations.push(destinationInputs[i].value.trim());
+            }
+
+            // Ajaxでデータをサーバーに送信
+            fetch("{{ route('routes.save') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                },
+                body: JSON.stringify({
+                    start: start,
+                    destinations: destinations
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('データが保存されました。');
+            })
+            .catch(error => {
+                console.error('データの保存に失敗しました。', error);
+            });
+        }
     </script>
-</body>
-</html>
+@endsection
