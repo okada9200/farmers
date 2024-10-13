@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c&display=swap" rel="stylesheet">
     <!-- カスタムCSS -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    @yield('styles') 
     <style>
         body {
             font-family: 'M PLUS Rounded 1c', sans-serif;
@@ -102,7 +103,7 @@
                     <a class="nav-link" href="{{ route('crops.create') }}"><i class="fas fa-plus-circle"></i>作物を追加</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" ><i class="fas fa-map-marker-alt"></i>ルート検索</a>
+                    <a class="nav-link" href="{{ route('routes.search') }}"><i class="fas fa-map-marker-alt"></i>ルート検索</a>
                 </li>
             </ul>
         </div>
@@ -119,7 +120,6 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <!-- BootstrapのJavaScript -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    
+    @yield('scripts') <!-- ここを追加 -->
 </body>
 </html>
-

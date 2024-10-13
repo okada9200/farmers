@@ -1,77 +1,51 @@
 <?php
 
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use GuzzleHttp\Client;
-use Exception;
+use App\Models\Route;
 
 class RouteController extends Controller
 {
-    public function calculateRoute(Request $request)
+    public function index()
     {
-        $start = $request->input('start');
-        $end = $request->input('end');
-        
-        $osrm_url = "http://localhost:5001/route/v1/driving/{$start};{$end}?overview=full&geometries=geojson";
+        // 最新のルートを取得
+        $route = Route::latest()->first();
 
-        $client = new Client();
-        $response = $client->get($osrm_url);
-        $data = json_decode($response->getBody(), true);
-
-        return response()->json($data);
-    }
-    
-    public function geocodeAddresses(array $addresses)
-    {
-        $coordinates = [];
-        foreach ($addresses as $address) {
-            $url = "https://nominatim.openstreetmap.org/search?format=json&q=" . urlencode($address);
-            $response = file_get_contents($url);
-            $data = json_decode($response, true);
-
-            if (!empty($data)) {
-                $coordinates[] = $data[0]['lat'] . ',' . $data[0]['lon'];
-            } else {
-                throw new Exception("住所が見つかりません: " . $address);
-            }
-        }
-        return $coordinates;
-    }
-
-    public function computeOptimalRoute(array $coordinates)
-    {
-        $coordinateString = implode(';', $coordinates);
-        $url = "http://localhost:5001/trip/v1/driving/" . $coordinateString . "?source=first&destination=last";
-        $response = file_get_contents($url);
-        $data = json_decode($response, true);
-
-        if ($data['code'] === 'Ok') {
-            return $data['trips'][0]['legs'];
+        if ($route) {
+            $start = $route->start;
+            $destinations = $route->destinations;
         } else {
-            throw new Exception("ルートを計算できません: " . $data['message']);
+            $start = '';
+            $destinations = [''];
         }
+
+        return view('map', compact('start', 'destinations'));
     }
 
-    public function showOptimalRoute(Request $request)
+    public function save(Request $request)
     {
-        $addresses = $request->input('addresses');
+        // 入力を検証
+        $request->validate([
+            'start' => 'required|string',
+            'destinations' => 'required|array',
+            'destinations.*' => 'required|string',
+        ]);
 
-        try {
-            $coordinates = $this->geocodeAddresses($addresses);
-            $route = $this->computeOptimalRoute($coordinates);
+        // データベースに保存
+        Route::create([
+            'start' => $request->input('start'),
+            'destinations' => $request->input('destinations'),
+        ]);
 
-            return view('route.optimal', compact('route'));
-        } catch (Exception $e) {
-            return back()->with('error', $e->getMessage());
-        }
+        return response()->json(['message' => 'ルートが保存されました。']);
     }
 
-    public function input()
+    public function clear()
     {
-        return view('route.input');
-    }
+        // データベースのルートを削除
+        Route::truncate();
 
+        return response()->json(['message' => '保存されたデータをクリアしました。']);
+    }
 }
-
