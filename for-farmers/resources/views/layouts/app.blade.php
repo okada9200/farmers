@@ -19,6 +19,7 @@
             font-size: 1.1em;
             background-color: #f0f4f7;
             color: #333;
+            padding-top: 70px; /* ナビゲーションバーの高さに合わせて調整 */
         }
         .navbar {
             background-color: #2a9d8f;
@@ -89,7 +90,7 @@
 </head>
 <body>
     <!-- ナビゲーションバー -->
-    <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg fixed-top"> <!-- fixed-top を追加 -->
         <a class="navbar-brand" href="{{ url('/crops') }}">for farmers</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="ナビゲーションの切替">
             <span class="navbar-toggler-icon"></span>
@@ -120,6 +121,6 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <!-- BootstrapのJavaScript -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    @yield('scripts') <!-- ここを追加 -->
+    @yield('scripts') 
 </body>
 </html>
