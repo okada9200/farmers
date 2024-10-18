@@ -3,9 +3,9 @@
 @section('content')
     <div id="container">
         <div id="sidebar">
-            <h1>ルート検索（TSP対応）</h1>
+            <h1>ルート検索</h1>
             <label for="start"><i class="fas fa-map-marker-alt" style="color:#007bff;"></i> 出発地</label>
-            <input type="text" id="start" placeholder="出発地（例：東京都千代田区1-1-1）を入力" value="{{ $start }}">
+            <input type="text" id="start" placeholder="出発地（例：東京都,千代田区,1-1-1）を入力" value="{{ $start }}">
 
             <div id="destinations">
                 @foreach ($destinations as $index => $destination)
@@ -23,7 +23,7 @@
                 <p>ルートを検索中...</p>
             </div>
 
-            <!-- Route Order Display -->
+            <!-- 目的地の順序を表示 -->
             <div id="route-order">
                 <h3>目的地巡回ルートの順番</h3>
                 <ul id="order-list"></ul>
@@ -242,6 +242,13 @@
     <!-- Font Awesome JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
+    <!-- JavaScript変数にルートとCSRFトークンを渡す -->
+    <script>
+        var saveRouteUrl = @json(route('routes.save'));
+        var clearRouteUrl = @json(route('routes.clear'));
+        var csrfToken = '{{ csrf_token() }}';
+    </script>
+
     <script>
         // マップの初期化
         var map = L.map('map').setView([34.6581, 135.7967], 13); // 奈良県大和郡山市矢田町の緯度経度
@@ -339,10 +346,10 @@
         // データをクリアするボタンのイベントリスナーを追加
         document.getElementById('clear-data').addEventListener('click', function() {
             // Ajaxでデータをサーバーから削除
-            fetch("{{ route('routes.clear') }}", {
+            fetch(clearRouteUrl, {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                    'X-CSRF-TOKEN': csrfToken
                 }
             })
             .then(response => response.json())
@@ -500,11 +507,7 @@
         // ローディング表示の切り替え
         function showLoading(show) {
             var loading = document.getElementById('loading');
-            if (show) {
-                loading.style.display = 'block';
-            } else {
-                loading.style.display = 'none';
-            }
+            loading.style.display = show ? 'block' : 'none';
         }
 
         // 地図クリック時のイベントリスナー
@@ -574,11 +577,11 @@
             }
 
             // Ajaxでデータをサーバーに送信
-            fetch("{{ route('routes.save') }}", {
+            fetch(saveRouteUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                    'X-CSRF-TOKEN': csrfToken
                 },
                 body: JSON.stringify({
                     start: start,
