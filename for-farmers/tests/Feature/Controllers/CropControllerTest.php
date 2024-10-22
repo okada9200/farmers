@@ -48,20 +48,5 @@ class CropControllerTest extends TestCase
     //     // 物理削除を確認
     //     $this->assertDatabaseMissing('crops', ['id' => $crop->id]);
 
-    //     // ソフトデリートを使用している場合は以下を使用
-    //     // $this->assertSoftDeleted('crops', ['id' => $crop->id]);
-    // }
-
-    // public function testEnvironmentIsTesting()
-    // {
-    //     // 環境変数を確認
-    //     $this->assertEquals('testing', env('APP_ENV'));
-    //     $this->assertEquals('testing', app()->environment());
-
-    //     // データベース接続が 'sqlite' であることを確認
-    //     $this->assertEquals('sqlite', config('database.default'));
-
-    //     // データベース名が ':memory:' であることを確認
-    //     $this->assertEquals(':memory:', config('database.connections.sqlite.database'));
     // }
 }
