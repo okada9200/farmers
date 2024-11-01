@@ -12,85 +12,11 @@
     <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c&display=swap" rel="stylesheet">
     <!-- カスタムCSS -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    @yield('styles') 
-    <style>
-        body {
-            font-family: 'M PLUS Rounded 1c', sans-serif;
-            font-size: 1.1em;
-            background-color: #f0f4f7;
-            color: #333;
-            padding-top: 70px; /* ナビゲーションバーの高さに合わせて調整 */
-        }
-        .navbar {
-            background-color: #2a9d8f;
-        }
-        .navbar-brand, .nav-link {
-            color: #fff !important;
-        }
-        .nav-link:hover {
-            color: #e9c46a !important;
-        }
-        .btn {
-            font-size: 1em;
-            padding: 10px 20px;
-            border-radius: 30px;
-        }
-        h1, h2 {
-            font-weight: bold;
-            margin-top: 30px;
-            margin-bottom: 20px;
-            color: #264653;
-        }
-        label {
-            font-weight: bold;
-        }
-        .icon {
-            margin-right: 5px;
-        }
-        /* カードデザイン */
-        .card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
-        .card-header {
-            background-color: #e9c46a;
-            color: #fff;
-            border-top-left-radius: 15px;
-            border-top-right-radius: 15px;
-            font-weight: bold;
-        }
-        .table-custom th,
-        .table-custom td {
-            border: none;
-            padding: 15px;
-        }
-        .table-custom tr {
-            border-bottom: 1px solid #dee2e6;
-        }
-        .table-custom thead th {
-            background-color: #f4a261;
-            color: #fff;
-        }
-        .table-custom tbody tr:hover {
-            background-color: #f0f4f7;
-        }
-        /* ボタンのスタイル */
-        .btn-custom {
-            background-color: #e76f51;
-            color: #fff;
-            border: none;
-        }
-        .btn-custom:hover {
-            background-color: #d35400;
-            color: #fff;
-        }
-    </style>
+    @yield('styles')
 </head>
 <body>
     <!-- ナビゲーションバー -->
-    <nav class="navbar navbar-expand-lg fixed-top"> <!-- fixed-top を追加 -->
+    <nav class="navbar navbar-expand-lg fixed-top">
         <a class="navbar-brand" href="{{ url('/crops') }}">for farmers</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="ナビゲーションの切替">
             <span class="navbar-toggler-icon"></span>
@@ -115,12 +41,9 @@
     </div>
 
     <!-- 必要なJavaScriptファイルを読み込み -->
-    <!-- jQuery（BootstrapのJavaScript機能に必要） -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <!-- Popper.js（モーダルやツールチップなどに必要） -->
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-    <!-- BootstrapのJavaScript -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    @yield('scripts') 
+    @yield('scripts')
 </body>
 </html>

@@ -1,0 +1,72 @@
+body {
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    font-size: 1.1em;
+    background-color: #f0f4f7;
+    color: #333;
+    padding-top: 70px;
+}
+.navbar {
+    background-color: #2a9d8f;
+}
+.navbar-brand, .nav-link {
+    color: #fff !important;
+}
+.nav-link:hover {
+    color: #e9c46a !important;
+}
+.btn {
+    font-size: 1em;
+    padding: 10px 20px;
+    border-radius: 30px;
+}
+h1, h2 {
+    font-weight: bold;
+    margin-top: 30px;
+    margin-bottom: 20px;
+    color: #264653;
+}
+label {
+    font-weight: bold;
+}
+.icon {
+    margin-right: 5px;
+}
+/* カードデザイン */
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+.card-header {
+    background-color: #e9c46a;
+    color: #fff;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    font-weight: bold;
+}
+.table-custom th,
+.table-custom td {
+    border: none;
+    padding: 15px;
+}
+.table-custom tr {
+    border-bottom: 1px solid #dee2e6;
+}
+.table-custom thead th {
+    background-color: #f4a261;
+    color: #fff;
+}
+.table-custom tbody tr:hover {
+    background-color: #f0f4f7;
+}
+/* ボタンのスタイル */
+.btn-custom {
+    background-color: #e76f51;
+    color: #fff;
+    border: none;
+}
+.btn-custom:hover {
+    background-color: #d35400;
+    color: #fff;
+}
