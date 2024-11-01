@@ -1,5 +1,5 @@
 <?php
-
+use Illuminate\Support\Facades\Route; 
 use App\Http\Controllers\CropController;
 use App\Http\Controllers\WorkController;
 use App\Http\Controllers\FertilizerController;

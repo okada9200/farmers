@@ -411,7 +411,7 @@
 
                     // OSRM Trip APIのURLを構築（roundtrip=trueに設定）
                     var coordinates = waypoints.map(wp => wp.lon + ',' + wp.lat).join(';');
-                    var osrmTripUrl = 'http://3.114.32.107:5050/trip/v1/driving/' + coordinates + '?source=first&roundtrip=true&geometries=geojson&overview=full';
+                    var osrmTripUrl = 'https://for-farmers.com/osrm/trip/v1/driving/' + coordinates + '?source=first&roundtrip=true&geometries=geojson&overview=full';
 
                     return fetch(osrmTripUrl);
                 })
