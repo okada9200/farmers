@@ -38,26 +38,17 @@
 ・静的解析ツールを用いて可読性のあるコードを書く
 
 ## 使用技術
-フロントエンド
-・HTML/CSS
-・JavaScript
+フロントエンド:HTML/CSS,JavaScript
 
-バックエンド
-・PHP　8.3.0
-・Laravel 11.11.1
+バックエンド:PHP　8.3.0,Laravel 11.11.1
 
-データベース
-・MySQL
+データベース:MySQL
 
-インフラ
-・AWS
+インフラ:AWS
 
-バージョン管理
-・Git/GitHub
+バージョン管理:Git/GitHub
 
-その他
-・OSRM API 
-・Leaflet
+その他:OSRM API ,Leaflet
 
 ## システム構成図
 ![スクリーンショット 2024-09-01 201125](https://github.com/user-attachments/assets/abe61a4c-d9f5-44c4-b715-0a8db8534f43)
