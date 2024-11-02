@@ -69,3 +69,6 @@
 最短ルートの計算
 ![スクリーンショット 2024-11-01 232644](https://github.com/user-attachments/assets/f9bc7622-3bc8-468a-9f0e-01ff6b221056)
 
+## ER図
+<img width="649" alt="スクリーンショット 2024-11-03 0 58 26" src="https://github.com/user-attachments/assets/0d0dca96-03ac-43db-bcdc-31f6939f088a">
+
