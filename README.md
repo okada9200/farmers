@@ -48,8 +48,9 @@
 
 その他:OSRM API ,Leaflet
 
-## システム構成図
-![スクリーンショット 2024-09-01 201125](https://github.com/user-attachments/assets/abe61a4c-d9f5-44c4-b715-0a8db8534f43)
+## インフラ構成図
+<img width="684" alt="スクリーンショット 2024-11-20 1 48 25" src="https://github.com/user-attachments/assets/3c44461f-0bd0-4054-8043-0267d210a7cb">
+
 
 ## 主な機能
 作物一覧
